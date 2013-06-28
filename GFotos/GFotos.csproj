@@ -56,6 +56,8 @@
     </ApplicationDefinition>
     <Compile Include="Framework\RelayCommand.cs" />
     <Compile Include="ViewModel\DirectoryRecord.cs" />
+    <Compile Include="ImageGrouping\ImagesGroup.cs" />
+    <Compile Include="ImageGrouping\ImagesGrouper.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
     <Page Include="MainWindow.xaml">
@@ -102,6 +104,7 @@
   <ItemGroup>
     <Resource Include="Images\folder.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

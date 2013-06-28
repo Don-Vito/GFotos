@@ -7,7 +7,8 @@
         Title="{Binding Title}" Height="600" Width="800" 
         d:DataContext="{d:DesignInstance viewmodel:MainWindowViewModel}">
     <Window.InputBindings>
-        <KeyBinding Command="{Binding Path=CleanupCommand}" Key="S" Modifiers="Control"></KeyBinding>
+        <KeyBinding Command="{Binding CleanupCommand}" Key="S" Modifiers="Control"></KeyBinding>
+        <KeyBinding Command="{Binding CancelCleanupCommand}" Key="Z" Modifiers="Control"></KeyBinding>
     </Window.InputBindings>
 
     <Grid>
@@ -17,6 +18,7 @@
         </Grid.RowDefinitions>
         <Menu Name="Menu" Grid.Row="0">
             <MenuItem Header="_Start Cleanup" Command="{Binding CleanupCommand}" InputGestureText="Ctrl+S" />
+            <MenuItem Header="_Cancel Cleanup" Command="{Binding CancelCleanupCommand}" InputGestureText="Ctrl+Z" />
         </Menu>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -31,7 +33,7 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <TextBox Grid.Row="0" Text="Select folders to cleanup" />
-                <TreeView Grid.Row="1" ItemsSource="{Binding RootDirectories}">
+                <TreeView Grid.Row="1" ItemsSource="{Binding RootDirectories}" IsEnabled="{Binding DirectoriesSelectionEnabled}">
                     <TreeView.Resources>
                         <HierarchicalDataTemplate DataType="{x:Type viewmodel:DirectoryRecord}" ItemsSource="{Binding Directories}" >
                             <StackPanel Orientation="Horizontal">

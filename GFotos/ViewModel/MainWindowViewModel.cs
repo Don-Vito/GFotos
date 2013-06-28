@@ -1,26 +1,51 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Input;
 using GFotos.Framework;
+using GFotos.ImageGrouping;
 
 namespace GFotos.ViewModel
 {
     class MainWindowViewModel : ViewModelBase
     {
+        private readonly BackgroundWorker _groupingBackgroundWorker;
         public string Title { get; private set; }
         public SafeObservableCollection<DirectoryRecord> RootDirectories { get; private set; }
         public SafeObservableCollection<DirectoryRecord> ChosenDirectories { get; private set; }
+        public SafeObservableCollection<ImagesGroup> ImagesGroups { get; private set; }
 
         public ICommand ChooseDirectoryCommand { get; private set; }
         public ICommand UnchooseDirectoryCommand { get; private set; }
         public ICommand CleanupCommand { get; private set; }
+        public ICommand CancelCleanupCommand { get; private set; }
+
+        private bool _directoriesSelectionEnabled;
+        public bool DirectoriesSelectionEnabled
+        {
+            get { return _directoriesSelectionEnabled; } 
+            set
+            {
+                if (_directoriesSelectionEnabled != value)
+                {
+                    _directoriesSelectionEnabled = value;
+                    RaisePropertyChanged("DirectoriesSelectionEnabled");
+                }
+            }
+        }
 
         public MainWindowViewModel()
         {
             Title = "GFotos";
-            
+            DirectoriesSelectionEnabled = true;
+            ImagesGroups = new SafeObservableCollection<ImagesGroup>();
+
+            _groupingBackgroundWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
+            _groupingBackgroundWorker.DoWork += RunGroupingHandler;
+            _groupingBackgroundWorker.RunWorkerCompleted += GroupingCompletedHandler;
+
             var rootDirectories = Directory.GetLogicalDrives().Select(
                 folder => CreateDirectoryRecord(new DirectoryInfo(folder)));
 
@@ -31,9 +56,11 @@ namespace GFotos.ViewModel
             UnchooseDirectoryCommand = new RelayCommand(param => { ((DirectoryRecord)param).Chosen = false; });
             ChosenDirectories = new SafeObservableCollection<DirectoryRecord>();
 
-            CleanupCommand = new RelayCommand(param => Cleanup(), param => ChosenDirectories.Any());
-        }        
+            CleanupCommand = new RelayCommand(param => Cleanup(), param => ChosenDirectories.Any() && DirectoriesSelectionEnabled);
+            CancelCleanupCommand = new RelayCommand(param => CancelCleanup(), param => CanCancelCleanup());
+        }
 
+        
         private DirectoryRecord CreateDirectoryRecord(DirectoryInfo directoryInfo)
         {
             var directoryRecord = new DirectoryRecord(directoryInfo);
@@ -60,7 +87,31 @@ namespace GFotos.ViewModel
 
         private void Cleanup()
         {
-            throw new System.NotImplementedException();
+            DirectoriesSelectionEnabled = false;
+            ImagesGroups.Clear();
+            _groupingBackgroundWorker.RunWorkerAsync();
         }
+
+        private void GroupingCompletedHandler(object sender, RunWorkerCompletedEventArgs e)
+        {
+            DirectoriesSelectionEnabled = true;
+        }
+
+        private void RunGroupingHandler(object sender, DoWorkEventArgs e)
+        {
+            IEnumerable<ImagesGroup> imagesGroups = ImagesGrouper.GroupImages(ChosenDirectories);
+            ImagesGroups.AddRange(imagesGroups);            
+        }
+
+        private void CancelCleanup()
+        {
+            _groupingBackgroundWorker.CancelAsync();
+        }
+
+        private bool CanCancelCleanup()
+        {
+            return _groupingBackgroundWorker.IsBusy;
+        }
+
     }
 }
