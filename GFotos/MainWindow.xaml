@@ -1,0 +1,69 @@
+﻿<Window x:Class="GFotos.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:viewmodel="clr-namespace:GFotos.ViewModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        Title="{Binding Title}" Height="600" Width="800" 
+        d:DataContext="{d:DesignInstance viewmodel:MainWindowViewModel}">
+    <Window.InputBindings>
+        <KeyBinding Command="{Binding Path=CleanupCommand}" Key="S" Modifiers="Control"></KeyBinding>
+    </Window.InputBindings>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Menu Name="Menu" Grid.Row="0">
+            <MenuItem Header="_Start Cleanup" Command="{Binding CleanupCommand}" InputGestureText="Ctrl+S" />
+        </Menu>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <TextBox Grid.Row="0" Text="Select folders to cleanup" />
+                <TreeView Grid.Row="1" ItemsSource="{Binding RootDirectories}">
+                    <TreeView.Resources>
+                        <HierarchicalDataTemplate DataType="{x:Type viewmodel:DirectoryRecord}" ItemsSource="{Binding Directories}" >
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox IsEnabled="{Binding Enabled}" IsChecked="{Binding Selected}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Checked">
+                                            <i:InvokeCommandAction 
+                                        Command="{Binding RelativeSource={RelativeSource AncestorType=TreeView}, Path=DataContext.ChooseDirectoryCommand}" 
+                                        CommandParameter="{Binding}"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="Unchecked">
+                                            <i:InvokeCommandAction 
+                                        Command="{Binding RelativeSource={RelativeSource AncestorType=TreeView}, Path=DataContext.UnchooseDirectoryCommand}" 
+                                        CommandParameter="{Binding}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </CheckBox>
+                                <Image Name="img" Width="20" Height="20" Stretch="Fill" Source="Images/folder.png"/>
+                                <TextBlock Text="{Binding Info.Name}" />
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+                    </TreeView.Resources>
+                </TreeView>
+            </Grid>
+            <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch"></GridSplitter>
+            <ListView Grid.Column="2" ItemsSource="{Binding ChosenDirectories}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextBox Text="{Binding Info.FullName, Mode=OneWay}" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+    </Grid>
+</Window>
