@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Input;
 using GFotos.Framework;
-using GFotos.ImageGrouping;
+using GFotos.ViewModel.ImageGrouping;
 
 namespace GFotos.ViewModel
 {

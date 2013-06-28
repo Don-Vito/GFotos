@@ -56,8 +56,8 @@
     </ApplicationDefinition>
     <Compile Include="Framework\RelayCommand.cs" />
     <Compile Include="ViewModel\DirectoryRecord.cs" />
-    <Compile Include="ImageGrouping\ImagesGroup.cs" />
-    <Compile Include="ImageGrouping\ImagesGrouper.cs" />
+    <Compile Include="ViewModel\ImageGrouping\ImagesGroup.cs" />
+    <Compile Include="ViewModel\ImageGrouping\ImagesGrouper.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
     <Page Include="MainWindow.xaml">
