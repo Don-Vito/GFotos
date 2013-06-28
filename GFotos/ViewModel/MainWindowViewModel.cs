@@ -95,6 +95,10 @@ namespace GFotos.ViewModel
         private void GroupingCompletedHandler(object sender, RunWorkerCompletedEventArgs e)
         {
             DirectoriesSelectionEnabled = true;
+            
+            // The cancel command is not disabled without this line
+            // Since it is a rare transition we are ok to initiate commands predicates reevaluation
+            CommandManager.InvalidateRequerySuggested();
         }
 
         private void RunGroupingHandler(object sender, DoWorkEventArgs e)
