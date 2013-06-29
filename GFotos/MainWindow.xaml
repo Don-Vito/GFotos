@@ -4,6 +4,8 @@
         xmlns:viewmodel="clr-namespace:GFotos.ViewModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid" xmlns:io="clr-namespace:System.IO;assembly=mscorlib"
+        xmlns:system="clr-namespace:System;assembly=System"
         Title="{Binding Title}" Height="600" Width="800" 
         d:DataContext="{d:DesignInstance viewmodel:MainWindowViewModel}">
     <Window.InputBindings>
@@ -59,34 +61,68 @@
                 </TreeView>
             </Grid>
             <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch"></GridSplitter>
-            <ListView Grid.Column="2" ItemsSource="{Binding ImagesGroups}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel>
-                            <ListView ItemsSource="{Binding ImageUris, Mode=OneWay}">
-                                <ListView.ItemTemplate>
-                                    <DataTemplate>
-
-                                        <Image Width="120" Height="120" HorizontalAlignment="Center">
-                                            <Image.Source>
-                                                <BitmapImage DecodePixelWidth="100" DecodePixelHeight="100" UriSource="{Binding AbsolutePath, Mode=OneWay}" />
-                                            </Image.Source>
-                                        </Image>
-
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
-                            <ListView ItemsSource="{Binding Directories, Mode=OneWay}">
-                                <ListView.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBox Text="{Binding FullName, Mode=OneWay}"/>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+            <Grid Grid.Column="2">
+                <Grid.Resources>
+                    <Style TargetType="{x:Type xcdg:HierarchicalGroupByControl}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </Style>
+                    <Style TargetType="{x:Type xcdg:RowSelectorPane}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </Style>
+                </Grid.Resources>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBox Grid.Row="0" Text="Search results"></TextBox>
+                <xcdg:DataGridControl Grid.Row="1"                                      
+                    ItemsSource="{Binding ImagesGroups}"                                                                   
+                    SynchronizeCurrent="True"
+                    NavigationBehavior="RowOnly"                                        
+                    ReadOnly="True" 
+                    AutoCreateColumns="False" Margin="0,1,0,-1">
+                    <xcdg:DataGridControl.View>
+                        <xcdg:TableflowView FixedColumnCount="2" ContainerHeight="130"/>
+                    </xcdg:DataGridControl.View>
+                    <xcdg:DataGridControl.Columns>
+                        <xcdg:Column FieldName="Directories" IsMainColumn="True" Title="Directories" Width="*">
+                            <xcdg:Column.CellContentTemplate>
+                                <DataTemplate>
+                                    <ListView ItemsSource="{Binding}">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate DataType="io:DirectoryInfo">
+                                                <TextBox Text="{Binding FullName, Mode=OneWay}" IsEnabled="False"/>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                </DataTemplate>
+                            </xcdg:Column.CellContentTemplate>
+                        </xcdg:Column>
+                        <xcdg:Column FieldName="ImageUris" Title="Similar files" Width="*">
+                            <xcdg:Column.CellContentTemplate>
+                                <DataTemplate>
+                                    <ListView ItemsSource="{Binding}">
+                                        <ListView.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel IsItemsHost="True"/>
+                                            </ItemsPanelTemplate>
+                                        </ListView.ItemsPanel>
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate DataType="system:Uri">
+                                                <Image Width="120" Height="120" HorizontalAlignment="Center">
+                                                    <Image.Source>
+                                                        <BitmapImage DecodePixelWidth="100" DecodePixelHeight="100" UriSource="{Binding AbsolutePath, Mode=OneWay}" />
+                                                    </Image.Source>
+                                                </Image>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                </DataTemplate>
+                            </xcdg:Column.CellContentTemplate>
+                        </xcdg:Column>
+                    </xcdg:DataGridControl.Columns>
+                </xcdg:DataGridControl>
+            </Grid>
         </Grid>
     </Grid>
 </Window>
