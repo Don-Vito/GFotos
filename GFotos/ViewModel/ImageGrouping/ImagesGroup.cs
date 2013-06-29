@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Input;
@@ -20,14 +21,16 @@ namespace GFotos.ViewModel.ImageGrouping
         public IEnumerable<Uri> ImageUris
         {
             get
-            {
+            {                
+                
                 if (_groupingDictionary.Any())
                 {
-                    IEnumerable<FileInfo> files = _groupingDictionary.Values.Take(1).ElementAt(0);
-                    return files.Select(fileInfo => new Uri(fileInfo.FullName));    
+                    IEnumerable<FileInfo> files = _groupingDictionary.First().Value;
+                    return files.Select(fileInfo => new Uri(fileInfo.FullName)).ToList();                    
                 }
                 
                 return new List<Uri>();
+                
             }
         }
        
@@ -40,6 +43,7 @@ namespace GFotos.ViewModel.ImageGrouping
         private void CleanDirectory(object obj)
         {
             var directoryInfo = obj as DirectoryInfo;
+            Debug.Assert(directoryInfo != null, "directoryInfo != null");
             if (_groupingDictionary.ContainsKey(directoryInfo))
             {
                 IEnumerable<FileInfo> filesToDelete = _groupingDictionary[directoryInfo];

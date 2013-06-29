@@ -59,10 +59,31 @@
                 </TreeView>
             </Grid>
             <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch"></GridSplitter>
-            <ListView Grid.Column="2" ItemsSource="{Binding ChosenDirectories}">
+            <ListView Grid.Column="2" ItemsSource="{Binding ImagesGroups}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <TextBox Text="{Binding Info.FullName, Mode=OneWay}" />
+                        <StackPanel>
+                            <ListView ItemsSource="{Binding ImageUris, Mode=OneWay}">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+
+                                        <Image Width="120" Height="120" HorizontalAlignment="Center">
+                                            <Image.Source>
+                                                <BitmapImage DecodePixelWidth="100" DecodePixelHeight="100" UriSource="{Binding AbsolutePath, Mode=OneWay}" />
+                                            </Image.Source>
+                                        </Image>
+
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                            <ListView ItemsSource="{Binding Directories, Mode=OneWay}">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding FullName, Mode=OneWay}"/>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
