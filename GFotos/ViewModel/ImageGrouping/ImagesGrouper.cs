@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using GFotos.Framework;
@@ -10,59 +9,50 @@ namespace GFotos.ViewModel.ImageGrouping
     {
         public static readonly string[] AllowedExtensions = new[] { ".jpg", ".jpeg" };
 
-        public static IEnumerable<ImagesGroup> GroupImages(IEnumerable<DirectoryRecord> chosenDirectories)
+        public static IEnumerable<RedundantImagesGroup> GroupImages(IEnumerable<DirectoryRecord> chosenDirectories)
         {
-            IEnumerable<KeyValuePair<string, List<FileInfo>>> sameFilesDictionary = FindSameFiles(chosenDirectories);
-            IEnumerable<KeyValuePair<HashSet<ComparableDirectoryInfo>, List<FileInfo>>> groupedDirectoriesDictionary = 
-                GroupDirectoriesWithSameFiles(sameFilesDictionary);
+            IEnumerable<RedundantImage> redundantImages = FindRedundantImages(chosenDirectories);
+            IEnumerable<KeyValuePair<IEnumerable<DirectoryInfo>, IEnumerable<RedundantImage>>> groupedDirectoriesDictionary = 
+                GroupDirectoriesWithSameRedundantImages(redundantImages);
             
-            return groupedDirectoriesDictionary.Select(keyValuePair => CreateGroup(keyValuePair.Key, keyValuePair.Value));
+            return groupedDirectoriesDictionary.Select(
+                keyValuePair => new RedundantImagesGroup(keyValuePair.Key, keyValuePair.Value));
         }
 
-        private static IEnumerable<KeyValuePair<HashSet<ComparableDirectoryInfo>, List<FileInfo>>> GroupDirectoriesWithSameFiles(
-            IEnumerable<KeyValuePair<string, List<FileInfo>>> sameFilesDictionary)
+        private static IEnumerable<KeyValuePair<IEnumerable<DirectoryInfo>, IEnumerable<RedundantImage>>> 
+            GroupDirectoriesWithSameRedundantImages(IEnumerable<RedundantImage> redundantImages)
         {
-            var sameDirectoryGroupsDictionary = new Dictionary<HashSet<ComparableDirectoryInfo>, List<FileInfo>>(
+            var sameDirectoryGroupsDictionary = new Dictionary<HashSet<ComparableDirectoryInfo>, IList<RedundantImage>>(
                 HashSet<ComparableDirectoryInfo>.CreateSetComparer());
             
-            foreach (KeyValuePair<string, List<FileInfo>> keyValuePair in sameFilesDictionary)
+            foreach (RedundantImage redundantImage in redundantImages)
             {
-                IList<FileInfo> fileInfos = keyValuePair.Value;
+                IList<FileInfo> fileInfos = redundantImage.FileInfos.ToList();
                 var directories = new HashSet<ComparableDirectoryInfo>(fileInfos.Select(fileInfo => new ComparableDirectoryInfo(fileInfo.Directory)));                
 
                 if (!sameDirectoryGroupsDictionary.ContainsKey(directories))
                 {
-                    sameDirectoryGroupsDictionary[directories] = new List<FileInfo>();
+                    sameDirectoryGroupsDictionary[directories] = new List<RedundantImage>();
                 }
-                sameDirectoryGroupsDictionary[directories].AddRange(fileInfos);
+                sameDirectoryGroupsDictionary[directories].Add(redundantImage);
             }
 
-            return sameDirectoryGroupsDictionary;
+            return sameDirectoryGroupsDictionary.Select(
+                keyValuePair => new KeyValuePair<IEnumerable<DirectoryInfo>, IEnumerable<RedundantImage>>(
+                    keyValuePair.Key.Select(comparableDirectoryInfo => comparableDirectoryInfo.Info),
+                    keyValuePair.Value));
         }
 
-        private static ImagesGroup CreateGroup(IEnumerable<ComparableDirectoryInfo> directories, IList<FileInfo> files)
-        {
-            IDictionary<DirectoryInfo, IEnumerable<FileInfo>> filesByDirectoriesDictionary = directories.ToDictionary(
-                directory => directory.Info,
-                directory => files.Where(file => IsParentDirectory(file, directory)));
-
-            return new ImagesGroup(filesByDirectoriesDictionary);
-        }
-
-        private static bool IsParentDirectory(FileInfo file, ComparableDirectoryInfo directory)
-        {
-            Debug.Assert(file.Directory != null, "file.Directory != null");
-            return directory.Equals(new ComparableDirectoryInfo(file.Directory));
-        }
-
-        private static IEnumerable<KeyValuePair<string, List<FileInfo>>> FindSameFiles(IEnumerable<DirectoryRecord> chosenDirectories)
+        private static IEnumerable<RedundantImage> FindRedundantImages(IEnumerable<DirectoryRecord> chosenDirectories)
         {
             var sameFilesDictionary = new Dictionary<string, List<FileInfo>>();
             foreach (DirectoryRecord chosenDirectory in chosenDirectories)
             {
                 ScanDirectory(chosenDirectory, sameFilesDictionary);
             }
-            return sameFilesDictionary.Where(keyValuePair => keyValuePair.Value.Count > 1);
+            
+            return sameFilesDictionary.Values.Where(fileInfos => fileInfos.Count > 1).
+                Select(fileInfos => new RedundantImage(fileInfos));
         }
 
         private static void ScanDirectory(DirectoryRecord chosenDirectory, Dictionary<string, List<FileInfo>> sameFilesDictionary)

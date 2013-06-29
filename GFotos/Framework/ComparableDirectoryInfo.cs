@@ -14,10 +14,7 @@ namespace GFotos.Framework
 
         public int CompareTo(ComparableDirectoryInfo other)
         {
-            return String.Compare(
-                Info.FullName.ToLower(),
-                other.Info.FullName.ToLower(),
-                StringComparison.Ordinal);
+            return FileUtils.CompareDirectories(Info, other.Info);
         }
 
         public override bool Equals(object obj)

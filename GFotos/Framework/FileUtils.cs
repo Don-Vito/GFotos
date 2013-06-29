@@ -16,5 +16,13 @@ namespace GFotos.Framework
                 }
             }
         }
+
+        public static int CompareDirectories(DirectoryInfo directoryInfo, DirectoryInfo otherDirectoryInfo)
+        {
+            return String.Compare(
+                directoryInfo.FullName.ToLower(), 
+                otherDirectoryInfo.FullName.ToLower(), 
+                StringComparison.Ordinal);
+        }
     }
 }

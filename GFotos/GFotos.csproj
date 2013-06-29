@@ -58,11 +58,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Framework\ComparableDirectoryInfo.cs" />
-    <Compile Include="Framework\DictionaryExtensions.cs" />
+    <Compile Include="Framework\ExtensionMethods.cs" />
     <Compile Include="Framework\RelayCommand.cs" />
     <Compile Include="ViewModel\DirectoryRecord.cs" />
     <Compile Include="Framework\FileUtils.cs" />
-    <Compile Include="ViewModel\ImageGrouping\ImagesGroup.cs" />
+    <Compile Include="ViewModel\ImageGrouping\RedundantImage.cs" />
+    <Compile Include="ViewModel\ImageGrouping\RedundantImagesGroup.cs" />
     <Compile Include="ViewModel\ImageGrouping\ImagesGrouper.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />

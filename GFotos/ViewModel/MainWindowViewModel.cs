@@ -15,7 +15,7 @@ namespace GFotos.ViewModel
         public string Title { get; private set; }
         public SafeObservableCollection<DirectoryRecord> RootDirectories { get; private set; }
         public SafeObservableCollection<DirectoryRecord> ChosenDirectories { get; private set; }
-        public SafeObservableCollection<ImagesGroup> ImagesGroups { get; private set; }
+        public SafeObservableCollection<RedundantImagesGroup> ImagesGroups { get; private set; }
 
         public ICommand ChooseDirectoryCommand { get; private set; }
         public ICommand UnchooseDirectoryCommand { get; private set; }
@@ -40,7 +40,7 @@ namespace GFotos.ViewModel
         {
             Title = "GFotos";
             DirectoriesSelectionEnabled = true;
-            ImagesGroups = new SafeObservableCollection<ImagesGroup>();
+            ImagesGroups = new SafeObservableCollection<RedundantImagesGroup>();
 
             _groupingBackgroundWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
             _groupingBackgroundWorker.DoWork += RunGroupingHandler;
@@ -103,7 +103,7 @@ namespace GFotos.ViewModel
 
         private void RunGroupingHandler(object sender, DoWorkEventArgs e)
         {
-            IEnumerable<ImagesGroup> imagesGroups = ImagesGrouper.GroupImages(ChosenDirectories);
+            IEnumerable<RedundantImagesGroup> imagesGroups = ImagesGrouper.GroupImages(ChosenDirectories);
             ImagesGroups.AddRange(imagesGroups);            
         }
 

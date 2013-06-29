@@ -24,7 +24,7 @@ namespace GFotos.Framework
             }
             else
             {
-                _currentDispatcher.Invoke(DispatcherPriority.DataBind, action);
+                _currentDispatcher.BeginInvoke(DispatcherPriority.DataBind, action);
             }
         }
  

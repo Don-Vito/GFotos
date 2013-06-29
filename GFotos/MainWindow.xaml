@@ -6,6 +6,7 @@
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid" xmlns:io="clr-namespace:System.IO;assembly=mscorlib"
         xmlns:system="clr-namespace:System;assembly=System"
+        xmlns:imageGrouping="clr-namespace:GFotos.ViewModel.ImageGrouping"
         Title="{Binding Title}" Height="768" Width="1024" 
         d:DataContext="{d:DesignInstance viewmodel:MainWindowViewModel}">
     <Window.InputBindings>
@@ -82,7 +83,7 @@
                     ReadOnly="True" 
                     AutoCreateColumns="False" Margin="0,1,0,-1">
                     <xcdg:DataGridControl.View>
-                        <xcdg:TableflowView FixedColumnCount="2" ContainerHeight="130"/>
+                        <xcdg:TableflowView FixedColumnCount="2" ContainerHeight="200"/>
                     </xcdg:DataGridControl.View>
                     <xcdg:DataGridControl.Columns>
                         <xcdg:Column FieldName="Directories" IsMainColumn="True" Title="Directories" Width="*" AllowSort="False">
@@ -96,7 +97,7 @@
                                                             Command="{Binding  RelativeSource={RelativeSource AncestorType=xcdg:DataRow}, Path=DataContext.CleanDirectoryCommand}" 
                                                             CommandParameter="{Binding}"
                                                             Content="Cleanup"/>
-                                                    <TextBox Text="{Binding FullName, Mode=OneWay}" IsEnabled="False" Width="Auto"/>
+                                                    <Label Content="{Binding FullName, Mode=OneWay}" />
                                                 </DockPanel>
                                             </DataTemplate>
                                         </ListView.ItemTemplate>
@@ -104,7 +105,7 @@
                                 </DataTemplate>
                             </xcdg:Column.CellContentTemplate>
                         </xcdg:Column>
-                        <xcdg:Column FieldName="ImageUris" Title="Similar files" Width="*" AllowSort="False">
+                        <xcdg:Column FieldName="Images" Title="Similar files" Width="*" AllowSort="False">
                             <xcdg:Column.CellContentTemplate>
                                 <DataTemplate>
                                     <ListView ItemsSource="{Binding}">
@@ -114,12 +115,23 @@
                                             </ItemsPanelTemplate>
                                         </ListView.ItemsPanel>
                                         <ListView.ItemTemplate>
-                                            <DataTemplate DataType="system:Uri">
-                                                <Image Width="120" Height="120" HorizontalAlignment="Center">
-                                                    <Image.Source>
-                                                        <BitmapImage DecodePixelWidth="100" DecodePixelHeight="100" UriSource="{Binding AbsolutePath, Mode=OneWay}" />
-                                                    </Image.Source>
-                                                </Image>
+                                            <DataTemplate DataType="imageGrouping:RedundantImage">
+                                                <Border>
+                                                    <StackPanel>
+                                                        <Image Width="120" Height="120" HorizontalAlignment="Center">
+                                                            <Image.Source>
+                                                                <BitmapImage DecodePixelWidth="100" DecodePixelHeight="100" UriSource="{Binding ImageUri.AbsolutePath, Mode=OneWay}" />
+                                                            </Image.Source>
+                                                        </Image>
+                                                        <ListView ItemsSource="{Binding FileInfos}">
+                                                            <ListView.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <Label Content="{Binding FullName, Mode=OneWay}" />
+                                                                </DataTemplate>
+                                                            </ListView.ItemTemplate>
+                                                        </ListView>
+                                                    </StackPanel>
+                                                </Border>
                                             </DataTemplate>
                                         </ListView.ItemTemplate>
                                     </ListView>
