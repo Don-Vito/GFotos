@@ -11,12 +11,9 @@ namespace GFotos.ViewModel.ImageGrouping
     class ImagesGroup : ViewModelBase
     {
         private readonly IDictionary<DirectoryInfo, IEnumerable<FileInfo>> _groupingDictionary;
-        public ICommand CleanDirectoryCommand;
 
-        public IEnumerable<DirectoryInfo> Directories
-        {
-            get { return _groupingDictionary.Keys; }
-        }
+        public ICommand CleanDirectoryCommand { get; private set; }
+        public SafeObservableCollection<DirectoryInfo> Directories { get; private set; }        
 
         public IEnumerable<Uri> ImageUris
         {
@@ -37,7 +34,9 @@ namespace GFotos.ViewModel.ImageGrouping
         public ImagesGroup(IDictionary<DirectoryInfo, IEnumerable<FileInfo>> groupingDictionary)
         {
             _groupingDictionary = groupingDictionary;
-            CleanDirectoryCommand = new RelayCommand(CleanDirectory);
+            Directories = new SafeObservableCollection<DirectoryInfo>();
+            Directories.AddRange(groupingDictionary.Keys);
+            CleanDirectoryCommand = new RelayCommand(CleanDirectory, param=>_groupingDictionary.Count > 1);
         }
 
         private void CleanDirectory(object obj)
@@ -49,11 +48,11 @@ namespace GFotos.ViewModel.ImageGrouping
                 IEnumerable<FileInfo> filesToDelete = _groupingDictionary[directoryInfo];
                 foreach (FileInfo fileInfo in filesToDelete)
                 {
-                      fileInfo.Delete();
+                      //fileInfo.Delete();
                 }
 
                 _groupingDictionary.Remove(directoryInfo);
-                RaisePropertyChanged("Directories");
+                Directories.Remove(directoryInfo);
                 RaisePropertyChanged("ImageUris");
             }
         }

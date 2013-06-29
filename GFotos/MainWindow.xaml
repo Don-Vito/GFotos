@@ -6,7 +6,7 @@
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid" xmlns:io="clr-namespace:System.IO;assembly=mscorlib"
         xmlns:system="clr-namespace:System;assembly=System"
-        Title="{Binding Title}" Height="600" Width="800" 
+        Title="{Binding Title}" Height="768" Width="1024" 
         d:DataContext="{d:DesignInstance viewmodel:MainWindowViewModel}">
     <Window.InputBindings>
         <KeyBinding Command="{Binding CleanupCommand}" Key="S" Modifiers="Control"></KeyBinding>
@@ -85,20 +85,26 @@
                         <xcdg:TableflowView FixedColumnCount="2" ContainerHeight="130"/>
                     </xcdg:DataGridControl.View>
                     <xcdg:DataGridControl.Columns>
-                        <xcdg:Column FieldName="Directories" IsMainColumn="True" Title="Directories" Width="*">
+                        <xcdg:Column FieldName="Directories" IsMainColumn="True" Title="Directories" Width="*" AllowSort="False">
                             <xcdg:Column.CellContentTemplate>
                                 <DataTemplate>
                                     <ListView ItemsSource="{Binding}">
                                         <ListView.ItemTemplate>
                                             <DataTemplate DataType="io:DirectoryInfo">
-                                                <TextBox Text="{Binding FullName, Mode=OneWay}" IsEnabled="False"/>
+                                                <DockPanel LastChildFill="True" >
+                                                    <Button DockPanel.Dock="Left" 
+                                                            Command="{Binding  RelativeSource={RelativeSource AncestorType=xcdg:DataRow}, Path=DataContext.CleanDirectoryCommand}" 
+                                                            CommandParameter="{Binding}"
+                                                            Content="Cleanup"/>
+                                                    <TextBox Text="{Binding FullName, Mode=OneWay}" IsEnabled="False" Width="Auto"/>
+                                                </DockPanel>
                                             </DataTemplate>
                                         </ListView.ItemTemplate>
                                     </ListView>
                                 </DataTemplate>
                             </xcdg:Column.CellContentTemplate>
                         </xcdg:Column>
-                        <xcdg:Column FieldName="ImageUris" Title="Similar files" Width="*">
+                        <xcdg:Column FieldName="ImageUris" Title="Similar files" Width="*" AllowSort="False">
                             <xcdg:Column.CellContentTemplate>
                                 <DataTemplate>
                                     <ListView ItemsSource="{Binding}">
