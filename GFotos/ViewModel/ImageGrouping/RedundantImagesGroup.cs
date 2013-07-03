@@ -14,10 +14,10 @@ namespace GFotos.ViewModel.ImageGrouping
         
         public RedundantImagesGroup(IEnumerable<DirectoryInfo> directories, IEnumerable<RedundantImage> images)
         {            
-            Directories = new SafeObservableCollection<DirectoryInfo>();
+            Directories = SafeObservableCollection<DirectoryInfo>.Create();
             Directories.AddRange(directories);
 
-            Images = new SafeObservableCollection<RedundantImage>();
+            Images = SafeObservableCollection<RedundantImage>.Create();
             Images.AddRange(images);
             
             CleanDirectoryCommand = new RelayCommand(CleanDirectory, param=>Directories.Count > 1);

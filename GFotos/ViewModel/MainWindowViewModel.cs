@@ -22,6 +22,20 @@ namespace GFotos.ViewModel
         public ICommand CleanupCommand { get; private set; }
         public ICommand CancelCleanupCommand { get; private set; }
 
+        private RedundantImagesGroup _selectedImagesGroup;
+        public RedundantImagesGroup SelectedImagesGroup
+        {
+            get { return _selectedImagesGroup; }
+            set
+            {
+                if (_selectedImagesGroup != value)
+                {
+                    _selectedImagesGroup = value;
+                    RaisePropertyChanged("SelectedImagesGroup");
+                }
+            }
+        }
+
         private bool _directoriesSelectionEnabled;
         public bool DirectoriesSelectionEnabled
         {
@@ -40,6 +54,7 @@ namespace GFotos.ViewModel
         {
             Title = "GFotos";
             DirectoriesSelectionEnabled = true;
+            SelectedImagesGroup = null;
             ImagesGroups = new SafeObservableCollection<RedundantImagesGroup>();
 
             _groupingBackgroundWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
@@ -95,6 +110,11 @@ namespace GFotos.ViewModel
         private void GroupingCompletedHandler(object sender, RunWorkerCompletedEventArgs e)
         {
             DirectoriesSelectionEnabled = true;
+
+            if (ImagesGroups.Any())
+            {
+                SelectedImagesGroup = ImagesGroups.First();
+            }
             
             // The cancel command is not disabled without this line
             // Since it is a rare transition we are ok to initiate commands predicates reevaluation

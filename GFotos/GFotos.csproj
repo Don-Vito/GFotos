@@ -60,6 +60,7 @@
     <Compile Include="Framework\ComparableDirectoryInfo.cs" />
     <Compile Include="Framework\ExtensionMethods.cs" />
     <Compile Include="Framework\RelayCommand.cs" />
+    <Compile Include="UriToImageConverter.cs" />
     <Compile Include="ViewModel\DirectoryRecord.cs" />
     <Compile Include="Framework\FileUtils.cs" />
     <Compile Include="ViewModel\ImageGrouping\RedundantImage.cs" />

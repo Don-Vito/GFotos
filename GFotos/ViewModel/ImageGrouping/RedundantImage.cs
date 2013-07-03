@@ -23,7 +23,7 @@ namespace GFotos.ViewModel.ImageGrouping
 
         public RedundantImage(IEnumerable<FileInfo> fileInfos)
         {
-            FileInfos = new SafeObservableCollection<FileInfo>();
+            FileInfos = SafeObservableCollection<FileInfo>.Create();
             FileInfos.AddRange(fileInfos);
             
             RemoveFileCommand = new RelayCommand(RemoveFile, param => FileInfos.Count > 1);

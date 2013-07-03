@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Windows;
 using System.Windows.Threading;
 
 namespace GFotos.Framework
@@ -10,6 +11,17 @@ namespace GFotos.Framework
     class SafeObservableCollection<T> : ObservableCollection<T>
     {
         private readonly Dispatcher _currentDispatcher;
+
+        public static SafeObservableCollection<T> Create()
+        {
+            SafeObservableCollection<T> result = null;
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                result = new SafeObservableCollection<T>();                
+            });
+
+            return result;
+        }
 
         public SafeObservableCollection()
         {            
@@ -24,7 +36,7 @@ namespace GFotos.Framework
             }
             else
             {
-                _currentDispatcher.BeginInvoke(DispatcherPriority.DataBind, action);
+                _currentDispatcher.Invoke(DispatcherPriority.DataBind, action);
             }
         }
  
