@@ -120,7 +120,7 @@
                                                     <StackPanel>
                                                         <Image Width="120" Height="120" HorizontalAlignment="Center">
                                                             <Image.Source>
-                                                                <BitmapImage DecodePixelWidth="100" DecodePixelHeight="100" UriSource="{Binding ImageUri.AbsolutePath, Mode=OneWay}" />
+                                                                <BitmapImage DecodePixelWidth="100" DecodePixelHeight="100" UriSource="{Binding ImageUri.LocalPath, Mode=OneWay}" />
                                                             </Image.Source>
                                                         </Image>
                                                         <ListView ItemsSource="{Binding FileInfos}">
