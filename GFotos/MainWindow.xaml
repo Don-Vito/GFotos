@@ -8,8 +8,8 @@
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid" xmlns:io="clr-namespace:System.IO;assembly=mscorlib"
         xmlns:system="clr-namespace:System;assembly=System"
-        xmlns:imageGrouping="clr-namespace:GFotos.ViewModel.ImageGrouping"
         Title="{Binding Title}" Height="600" Width="1024" 
+        Icon="Images\cat.png"
         d:DataContext="{d:DesignInstance viewmodel:MainWindowViewModel}">
     <Window.InputBindings>
         <KeyBinding Command="{Binding CleanupCommand}" Key="S" Modifiers="Control"></KeyBinding>
@@ -47,7 +47,12 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <TextBox Grid.Row="0" Text="Select folders to cleanup" />
+                <DockPanel  Grid.Row="0">
+                    <Label Content="Select folders to cleanup" DockPanel.Dock="Left" />
+                    <Button ToolTip="Clear selection" Command="{Binding ClearSelectionCommand}" DockPanel.Dock="Right" HorizontalAlignment="Right">
+                        <Image Source="Images\clear.png" Width="16" MinWidth="16" />
+                    </Button>
+                </DockPanel>
                 <TreeView Grid.Row="1" ItemsSource="{Binding RootDirectories}" IsEnabled="{Binding DirectoriesSelectionEnabled}">
                     <TreeView.Resources>
                         <HierarchicalDataTemplate DataType="{x:Type viewmodel:DirectoryRecord}" ItemsSource="{Binding Directories}" >

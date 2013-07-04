@@ -21,6 +21,7 @@ namespace GFotos.ViewModel
         public ICommand UnchooseDirectoryCommand { get; private set; }
         public ICommand CleanupCommand { get; private set; }
         public ICommand CancelCleanupCommand { get; private set; }
+        public ICommand ClearSelectionCommand { get; private set; }
 
         private RedundantImagesGroup _selectedImagesGroup;
         public RedundantImagesGroup SelectedImagesGroup
@@ -48,7 +49,7 @@ namespace GFotos.ViewModel
                     RaisePropertyChanged("DirectoriesSelectionEnabled");
                 }
             }
-        }
+        }       
 
         public MainWindowViewModel()
         {
@@ -73,9 +74,10 @@ namespace GFotos.ViewModel
 
             CleanupCommand = new RelayCommand(param => Cleanup(), param => ChosenDirectories.Any() && DirectoriesSelectionEnabled);
             CancelCleanupCommand = new RelayCommand(param => CancelCleanup(), param => CanCancelCleanup());
-        }
 
-        
+            ClearSelectionCommand = new RelayCommand(param => ClearSelectedCommands(), param => ChosenDirectories.Any());
+        }        
+
         private DirectoryRecord CreateDirectoryRecord(DirectoryInfo directoryInfo)
         {
             var directoryRecord = new DirectoryRecord(directoryInfo);
@@ -135,6 +137,16 @@ namespace GFotos.ViewModel
         private bool CanCancelCleanup()
         {
             return _groupingBackgroundWorker.IsBusy;
+        }
+
+        private void ClearSelectedCommands()
+        {
+            
+            foreach (DirectoryRecord chosenDirectory in ChosenDirectories.ToList())
+            {
+                chosenDirectory.Selected = false;
+                chosenDirectory.Chosen = false;
+            }
         }
 
     }
