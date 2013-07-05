@@ -1,0 +1,79 @@
+﻿<UserControl x:Class="GFotos.View.SearchResultsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:xcdg="clr-namespace:Xceed.Wpf.DataGrid;assembly=Xceed.Wpf.DataGrid"
+             xmlns:views="clr-namespace:Xceed.Wpf.DataGrid.Views;assembly=Xceed.Wpf.DataGrid"
+             xmlns:io="clr-namespace:System.IO;assembly=mscorlib" xmlns:view="clr-namespace:GFotos.View"
+             xmlns:viewModel="clr-namespace:GFotos.ViewModel"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300" 
+             d:DataContext="{d:DesignInstance viewModel:SearchResultsViewModel}">
+    <Grid>
+        <Grid.Resources>
+            <Style TargetType="{x:Type xcdg:HierarchicalGroupByControl}">
+                <Setter Property="Visibility" Value="Collapsed"/>
+            </Style>
+            <Style TargetType="{x:Type xcdg:RowSelectorPane}">
+                <Setter Property="Visibility" Value="Collapsed"/>
+            </Style>
+        </Grid.Resources>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <xcdg:DataGridControl Grid.Column="0"                                  
+                ItemsSource="{Binding ImagesGroups}"                                                                   
+                SynchronizeCurrent="True"
+                NavigationBehavior="RowOnly"                                        
+                ReadOnly="True" 
+                AutoCreateColumns="False" Margin="0,1,0,-1"
+                SelectedItem="{Binding SelectedImagesGroup, Mode=TwoWay}">
+            <xcdg:DataGridControl.View>
+                <views:TableflowView FixedColumnCount="1" ContainerHeight="200"/>
+            </xcdg:DataGridControl.View>
+            <xcdg:DataGridControl.Columns>
+                <xcdg:Column FieldName="Directories" IsMainColumn="True" Title="Search results" Width="*" AllowSort="False">
+                    <xcdg:Column.CellContentTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <Label Content="{Binding RelativeSource={RelativeSource AncestorType=xcdg:DataRow}, Path=DataContext.Title}" Background="#FF10164F" Foreground="#FFF1F1F1"/>
+                                <ListView ItemsSource="{Binding}" BorderThickness="0">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate DataType="io:DirectoryInfo">
+                                            <DockPanel LastChildFill="True" >
+                                                <Button DockPanel.Dock="Left" 
+                                                        Command="{Binding  RelativeSource={RelativeSource AncestorType=xcdg:DataRow}, Path=DataContext.CleanDirectoryCommand}" 
+                                                        CommandParameter="{Binding}" 
+                                                        ToolTip="Cleanup all redundant images of this group from here">
+                                                    <Image Source="Images\clean.png" Width="16" MinWidth="16" />
+                                                </Button>
+                                                <Button DockPanel.Dock="Left" 
+                                                        Command="{Binding  RelativeSource={RelativeSource AncestorType=xcdg:DataRow}, Path=DataContext.PreferDirectoryCommand}" 
+                                                        CommandParameter="{Binding}" 
+                                                        ToolTip="Leave all redundant images of this group here">
+                                                    <Image Source="Images\favorite.png" Width="16" MinWidth="16" />
+                                                </Button>
+                                                <Button DockPanel.Dock="Left" 
+                                                        Command="{Binding  RelativeSource={RelativeSource AncestorType=xcdg:DataGridControl}, Path=DataContext.GlobalPreferDirectoryCommand}" 
+                                                        CommandParameter="{Binding}" 
+                                                        ToolTip="Leave all redundant images across all groups here">
+                                                    <Image Source="Images\global_favorite.png" Width="16" MinWidth="16" />
+                                                </Button>
+                                                <Label Content="{Binding FullName, Mode=OneWay}" />
+                                            </DockPanel>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </StackPanel>
+                        </DataTemplate>
+                    </xcdg:Column.CellContentTemplate>
+                </xcdg:Column>
+            </xcdg:DataGridControl.Columns>
+        </xcdg:DataGridControl>
+        <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch"></GridSplitter>
+        <view:RedundantImagesGroupView Grid.Column="2" DataContext="{Binding SelectedImagesGroup}"/>
+    </Grid>
+</UserControl>

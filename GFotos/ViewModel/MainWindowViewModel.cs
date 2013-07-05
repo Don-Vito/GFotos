@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Windows.Input;
 using GFotos.Framework;
@@ -13,41 +11,24 @@ namespace GFotos.ViewModel
     {
         private readonly BackgroundWorker _groupingBackgroundWorker;
         public string Title { get; private set; }
-        public SafeObservableCollection<DirectoryRecord> RootDirectories { get; private set; }
-        public SafeObservableCollection<DirectoryRecord> ChosenDirectories { get; private set; }
-        public SafeObservableCollection<RedundantImagesGroup> ImagesGroups { get; private set; }
 
-        public ICommand ChooseDirectoryCommand { get; private set; }
-        public ICommand UnchooseDirectoryCommand { get; private set; }
+        public SearchResultsViewModel SearchResults { get; private set; }
+        public DirectoriesSelectionViewModel DirectoriesSelection { get; private set; }
+
         public ICommand CleanupCommand { get; private set; }
         public ICommand CancelCleanupCommand { get; private set; }
-        public ICommand ClearSelectionCommand { get; private set; }
-        public ICommand GlobalPreferDirectoryCommand { get; private set; }
 
-        private RedundantImagesGroup _selectedImagesGroup;
-        public RedundantImagesGroup SelectedImagesGroup
+        private bool _isSearching;
+        public bool IsSearching
         {
-            get { return _selectedImagesGroup; }
+            get { return _isSearching; } 
             set
             {
-                if (_selectedImagesGroup != value)
+                if (_isSearching != value)
                 {
-                    _selectedImagesGroup = value;
-                    RaisePropertyChanged("SelectedImagesGroup");
-                }
-            }
-        }
-
-        private bool _directoriesSelectionEnabled;
-        public bool DirectoriesSelectionEnabled
-        {
-            get { return _directoriesSelectionEnabled; } 
-            set
-            {
-                if (_directoriesSelectionEnabled != value)
-                {
-                    _directoriesSelectionEnabled = value;
-                    RaisePropertyChanged("DirectoriesSelectionEnabled");
+                    _isSearching = value;
+                    DirectoriesSelection.IsEnabled = !_isSearching;
+                    RaisePropertyChanged("IsSearching");
                 }
             }
         }       
@@ -55,71 +36,37 @@ namespace GFotos.ViewModel
         public MainWindowViewModel()
         {
             Title = "GFotos";
-            DirectoriesSelectionEnabled = true;
-            SelectedImagesGroup = null;
-            ImagesGroups = new SafeObservableCollection<RedundantImagesGroup>();
+            IsSearching = false;
 
+            DirectoriesSelection = new DirectoriesSelectionViewModel();
             _groupingBackgroundWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
             _groupingBackgroundWorker.DoWork += RunGroupingHandler;
             _groupingBackgroundWorker.RunWorkerCompleted += GroupingCompletedHandler;
 
-            var rootDirectories = Directory.GetLogicalDrives().Select(
-                folder => CreateDirectoryRecord(new DirectoryInfo(folder)));
-
-            RootDirectories = new SafeObservableCollection<DirectoryRecord>();
-            RootDirectories.AddRange(rootDirectories);
-
-            ChooseDirectoryCommand = new RelayCommand(param => { ((DirectoryRecord) param).Chosen = true; });
-            UnchooseDirectoryCommand = new RelayCommand(param => { ((DirectoryRecord)param).Chosen = false; });
-            ChosenDirectories = new SafeObservableCollection<DirectoryRecord>();
-
-            CleanupCommand = new RelayCommand(param => Cleanup(), param => ChosenDirectories.Any() && DirectoriesSelectionEnabled);
+            CleanupCommand = new RelayCommand(param => Cleanup(), param => DirectoriesSelection.ChosenDirectories.Any() && !IsSearching);
             CancelCleanupCommand = new RelayCommand(param => CancelCleanup(), param => CanCancelCleanup());
-
-            ClearSelectionCommand = new RelayCommand(param => ClearSelectedCommands(), param => ChosenDirectories.Any());
-
-            GlobalPreferDirectoryCommand = new RelayCommand(GlobalPreferDirectory, param => ImagesGroups.Any());
         }      
-
-        private DirectoryRecord CreateDirectoryRecord(DirectoryInfo directoryInfo)
-        {
-            var directoryRecord = new DirectoryRecord(directoryInfo);
-            directoryRecord.PropertyChanged += HandleDirectoryPropertyChanged;
-            return directoryRecord;
-        }
-
-        private void HandleDirectoryPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "Chosen")
-            {
-                var directoryRecord = sender as DirectoryRecord;
-                Debug.Assert(directoryRecord != null, "directoryRecord != null");
-                if (directoryRecord.Chosen)
-                {
-                    ChosenDirectories.Add(directoryRecord);
-                }
-                else
-                {                    
-                    ChosenDirectories.Remove(directoryRecord);
-                }
-            }
-        }
 
         private void Cleanup()
         {
-            DirectoriesSelectionEnabled = false;
-            ImagesGroups.Clear();
+            IsSearching = true;
+            SearchResults = null;
+            RaisePropertyChanged("SearchResults");
             _groupingBackgroundWorker.RunWorkerAsync();
         }
 
         private void GroupingCompletedHandler(object sender, RunWorkerCompletedEventArgs e)
         {
-            DirectoriesSelectionEnabled = true;
+            IsSearching = false;
 
-            if (ImagesGroups.Any())
+            if (e.Cancelled)
             {
-                SelectedImagesGroup = ImagesGroups.First();
+                return;
             }
+
+            var imagesGroups = e.Result as IEnumerable<RedundantImagesGroup>;
+            SearchResults = new SearchResultsViewModel(imagesGroups);
+            RaisePropertyChanged("SearchResults");         
             
             // The cancel command is not disabled without this line
             // Since it is a rare transition we are ok to initiate commands predicates reevaluation
@@ -128,8 +75,7 @@ namespace GFotos.ViewModel
 
         private void RunGroupingHandler(object sender, DoWorkEventArgs e)
         {
-            IEnumerable<RedundantImagesGroup> imagesGroups = ImagesGrouper.GroupImages(ChosenDirectories);
-            ImagesGroups.AddRange(imagesGroups);            
+            e.Result = ImagesGrouper.GroupImages(DirectoriesSelection.ChosenDirectories);
         }
 
         private void CancelCleanup()
@@ -140,26 +86,6 @@ namespace GFotos.ViewModel
         private bool CanCancelCleanup()
         {
             return _groupingBackgroundWorker.IsBusy;
-        }
-
-        private void ClearSelectedCommands()
-        {
-            
-            foreach (DirectoryRecord chosenDirectory in ChosenDirectories.ToList())
-            {
-                chosenDirectory.Selected = false;
-                chosenDirectory.Chosen = false;
-            }
-        }
-
-        private void GlobalPreferDirectory(object obj)
-        {
-            var directoryInfo = obj as DirectoryInfo;
-
-            foreach (RedundantImagesGroup redundantImagesGroup in ImagesGroups)
-            {
-                redundantImagesGroup.PreferDirectory(directoryInfo);
-            }
-        }
+        }        
     }
 }

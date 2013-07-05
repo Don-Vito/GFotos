@@ -1,6 +1,6 @@
 ﻿using GFotos.ViewModel;
 
-namespace GFotos
+namespace GFotos.View
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

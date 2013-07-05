@@ -1,0 +1,36 @@
+﻿<Window x:Class="GFotos.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:viewmodel="clr-namespace:GFotos.ViewModel" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"        
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
+        xmlns:view="clr-namespace:GFotos.View"
+        Title="{Binding Title}" Height="600" Width="1024" 
+        Icon="Images\cat.png"
+        d:DataContext="{d:DesignInstance viewmodel:MainWindowViewModel}">
+    <Window.InputBindings>
+        <KeyBinding Command="{Binding CleanupCommand}" Key="S" Modifiers="Control"></KeyBinding>
+        <KeyBinding Command="{Binding CancelCleanupCommand}" Key="Z" Modifiers="Control"></KeyBinding>
+    </Window.InputBindings>
+
+    <Grid>        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Menu Name="Menu" Grid.Row="0">
+            <MenuItem Header="_Start Cleanup" Command="{Binding CleanupCommand}" InputGestureText="Ctrl+S" />
+            <MenuItem Header="_Cancel Cleanup" Command="{Binding CancelCleanupCommand}" InputGestureText="Ctrl+Z" />
+        </Menu>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <view:DirectoriesSelectionView Grid.Column="0" DataContext="{Binding DirectoriesSelection}" />
+            <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch"></GridSplitter>
+            <view:SearchResultsView Grid.Column="2" DataContext="{Binding SearchResults}"/>            
+        </Grid>
+    </Grid>
+</Window>

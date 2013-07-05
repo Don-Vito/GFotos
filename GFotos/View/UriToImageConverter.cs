@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
 
-namespace GFotos
+namespace GFotos.View
 {
     public class UriToImageConverter : IValueConverter
     {
