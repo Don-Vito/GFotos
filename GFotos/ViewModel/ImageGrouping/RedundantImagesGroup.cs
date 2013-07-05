@@ -23,6 +23,18 @@ namespace GFotos.ViewModel.ImageGrouping
             get { return string.Format("Images group {0}", _id);  }
         }
 
+        public int TotalFiles { get { return Images.Sum(image => image.FileInfos.Count); } }
+
+        public long TotalSize { get { return Images.Sum(image => image.FileInfos.Count * image.FileSize); } }
+
+        public string Summary
+        {
+            get
+            {
+                return string.Format("Files count: {0}  Occupied space: {1} KB", TotalFiles, TotalSize / 1024);
+            }
+        }
+
         public static RedundantImagesGroup Create(IEnumerable<DirectoryInfo> directories,
                                                   IEnumerable<RedundantImage> images)
         {
@@ -60,6 +72,10 @@ namespace GFotos.ViewModel.ImageGrouping
                 var removedFile = oldItem as FileInfo;
                 HandleFileRemoval(removedFile);
             }
+
+            RaisePropertyChanged("TotalSize");
+            RaisePropertyChanged("TotalFiles");
+            RaisePropertyChanged("Summary");
         }
 
         private void HandleFileRemoval(FileInfo removedFile)

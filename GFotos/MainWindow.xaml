@@ -130,7 +130,11 @@
             </xcdg:DataGridControl>
             <GridSplitter Grid.Column="3" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch"></GridSplitter>
             <Grid Grid.Column="4">
-                <xcdg:DataGridControl Grid.Row="1"                                      
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <xcdg:DataGridControl Grid.Row="0"                                      
                     ItemsSource="{Binding SelectedImagesGroup.Images}"                                                                   
                     SynchronizeCurrent="True"
                     NavigationBehavior="RowOnly"                                        
@@ -176,9 +180,9 @@
                                 </DataTemplate>
                             </xcdg:Column.CellContentTemplate>
                         </xcdg:Column>
-
                     </xcdg:DataGridControl.Columns>
                 </xcdg:DataGridControl>
+                <Label Grid.Row="1" Content="{Binding SelectedImagesGroup.Summary}"/>
             </Grid>
         </Grid>
     </Grid>

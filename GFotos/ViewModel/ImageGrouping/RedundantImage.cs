@@ -22,6 +22,8 @@ namespace GFotos.ViewModel.ImageGrouping
             }
         }
 
+        public long FileSize { get { return FileInfos.First().Length; } }
+
         public RedundantImage(IEnumerable<FileInfo> fileInfos)
         {
             FileInfos = SafeObservableCollection<FileInfo>.Create();
