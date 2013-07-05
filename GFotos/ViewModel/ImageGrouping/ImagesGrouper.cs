@@ -16,7 +16,7 @@ namespace GFotos.ViewModel.ImageGrouping
                 GroupDirectoriesWithSameRedundantImages(redundantImages);
             
             return groupedDirectoriesDictionary.Select(
-                keyValuePair => new RedundantImagesGroup(keyValuePair.Key, keyValuePair.Value));
+                keyValuePair => RedundantImagesGroup.Create(keyValuePair.Key, keyValuePair.Value));
         }
 
         private static IEnumerable<KeyValuePair<IEnumerable<DirectoryInfo>, IEnumerable<RedundantImage>>> 

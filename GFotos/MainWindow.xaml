@@ -38,7 +38,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="300"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
@@ -93,19 +93,36 @@
                     <xcdg:Column FieldName="Directories" IsMainColumn="True" Title="Search results" Width="*" AllowSort="False">
                         <xcdg:Column.CellContentTemplate>
                             <DataTemplate>
-                                <ListView ItemsSource="{Binding}">
-                                    <ListView.ItemTemplate>
-                                        <DataTemplate DataType="io:DirectoryInfo">
-                                            <DockPanel LastChildFill="True" >
-                                                <Button DockPanel.Dock="Left" 
-                                                    Command="{Binding  RelativeSource={RelativeSource AncestorType=xcdg:DataRow}, Path=DataContext.CleanDirectoryCommand}" 
-                                                    CommandParameter="{Binding}"
-                                                    Content="Cleanup"/>
-                                                <Label Content="{Binding FullName, Mode=OneWay}" />
-                                            </DockPanel>
-                                        </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
+                                <StackPanel>
+                                    <Label Content="{Binding RelativeSource={RelativeSource AncestorType=xcdg:DataRow}, Path=DataContext.Title}" Background="#FF10164F" Foreground="#FFF1F1F1"/>
+                                    <ListView ItemsSource="{Binding}" BorderThickness="0">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate DataType="io:DirectoryInfo">
+                                                <DockPanel LastChildFill="True" >
+                                                    <Button DockPanel.Dock="Left" 
+                                                        Command="{Binding  RelativeSource={RelativeSource AncestorType=xcdg:DataRow}, Path=DataContext.CleanDirectoryCommand}" 
+                                                        CommandParameter="{Binding}" 
+                                                        ToolTip="Cleanup all redundant images of this group from here">
+                                                        <Image Source="Images\clean.png" Width="16" MinWidth="16" />
+                                                    </Button>
+                                                    <Button DockPanel.Dock="Left" 
+                                                        Command="{Binding  RelativeSource={RelativeSource AncestorType=xcdg:DataRow}, Path=DataContext.PreferDirectoryCommand}" 
+                                                        CommandParameter="{Binding}" 
+                                                        ToolTip="Leave all redundant images of this group here">
+                                                        <Image Source="Images\favorite.png" Width="16" MinWidth="16" />
+                                                    </Button>
+                                                    <Button DockPanel.Dock="Left" 
+                                                        Command="{Binding  RelativeSource={RelativeSource AncestorType=xcdg:DataGridControl}, Path=DataContext.GlobalPreferDirectoryCommand}" 
+                                                        CommandParameter="{Binding}" 
+                                                        ToolTip="Leave all redundant images across all groups here">
+                                                        <Image Source="Images\global_favorite.png" Width="16" MinWidth="16" />
+                                                    </Button>
+                                                    <Label Content="{Binding FullName, Mode=OneWay}" />
+                                                </DockPanel>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                </StackPanel>
                             </DataTemplate>
                         </xcdg:Column.CellContentTemplate>
                     </xcdg:Column>
@@ -120,13 +137,22 @@
                     ReadOnly="True" 
                     AutoCreateColumns="False" Margin="0,1,0,-1">
                     <xcdg:DataGridControl.View>
-                        <xcdg:TableflowView FixedColumnCount="2" ContainerHeight="200"/>
+                        <xcdg:TableflowView FixedColumnCount="2" ContainerHeight="130"/>
                     </xcdg:DataGridControl.View>
                     <xcdg:DataGridControl.Columns>
-                        <xcdg:Column FieldName="FileInfos" IsMainColumn="True" Title="Image Locations" Width="*" AllowSort="False">
+                        <xcdg:Column FieldName="ImageUri" Title="Image" IsMainColumn="True" Width="130" AllowSort="False">
+                            <xcdg:Column.CellContentTemplate>
+                                <DataTemplate DataType="system:Uri">
+                                    <Image Width="120" Height="120" 
+                                           HorizontalAlignment="Center" 
+                                           Source="{Binding Converter={StaticResource LocalUriToImageConverter}}" />
+                                </DataTemplate>
+                            </xcdg:Column.CellContentTemplate>
+                        </xcdg:Column>
+                        <xcdg:Column FieldName="FileInfos"  Title="Image Locations" Width="*" AllowSort="False">
                             <xcdg:Column.CellContentTemplate>
                                 <DataTemplate>
-                                    <ListView ItemsSource="{Binding}">
+                                    <ListView ItemsSource="{Binding}" BorderThickness="0">
                                         <ListView.ItemTemplate>
                                             <DataTemplate DataType="io:FileInfo">
                                                 <DockPanel LastChildFill="True" >
@@ -138,15 +164,7 @@
                                 </DataTemplate>
                             </xcdg:Column.CellContentTemplate>
                         </xcdg:Column>
-                        <xcdg:Column FieldName="ImageUri" Title="Image" Width="*" AllowSort="False">
-                            <xcdg:Column.CellContentTemplate>
-                                <DataTemplate DataType="system:Uri">
-                                    <Image Width="120" Height="120" 
-                                           HorizontalAlignment="Center" 
-                                           Source="{Binding Converter={StaticResource LocalUriToImageConverter}}" />
-                                </DataTemplate>
-                            </xcdg:Column.CellContentTemplate>
-                        </xcdg:Column>
+
                     </xcdg:DataGridControl.Columns>
                 </xcdg:DataGridControl>
             </Grid>

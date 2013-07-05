@@ -22,6 +22,7 @@ namespace GFotos.ViewModel
         public ICommand CleanupCommand { get; private set; }
         public ICommand CancelCleanupCommand { get; private set; }
         public ICommand ClearSelectionCommand { get; private set; }
+        public ICommand GlobalPreferDirectoryCommand { get; private set; }
 
         private RedundantImagesGroup _selectedImagesGroup;
         public RedundantImagesGroup SelectedImagesGroup
@@ -76,7 +77,9 @@ namespace GFotos.ViewModel
             CancelCleanupCommand = new RelayCommand(param => CancelCleanup(), param => CanCancelCleanup());
 
             ClearSelectionCommand = new RelayCommand(param => ClearSelectedCommands(), param => ChosenDirectories.Any());
-        }        
+
+            GlobalPreferDirectoryCommand = new RelayCommand(GlobalPreferDirectory, param => ImagesGroups.Any());
+        }      
 
         private DirectoryRecord CreateDirectoryRecord(DirectoryInfo directoryInfo)
         {
@@ -149,5 +152,14 @@ namespace GFotos.ViewModel
             }
         }
 
+        private void GlobalPreferDirectory(object obj)
+        {
+            var directoryInfo = obj as DirectoryInfo;
+
+            foreach (RedundantImagesGroup redundantImagesGroup in ImagesGroups)
+            {
+                redundantImagesGroup.PreferDirectory(directoryInfo);
+            }
+        }
     }
 }
