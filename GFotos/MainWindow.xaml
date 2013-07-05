@@ -156,6 +156,18 @@
                                         <ListView.ItemTemplate>
                                             <DataTemplate DataType="io:FileInfo">
                                                 <DockPanel LastChildFill="True" >
+                                                    <Button DockPanel.Dock="Left" 
+                                                        Command="{Binding  RelativeSource={RelativeSource AncestorType=xcdg:DataRow}, Path=DataContext.CleanLocationCommand}" 
+                                                        CommandParameter="{Binding}" 
+                                                        ToolTip="Remove an image from this location">
+                                                        <Image Source="Images\clean.png" Width="16" MinWidth="16" />
+                                                    </Button>
+                                                    <Button DockPanel.Dock="Left" 
+                                                        Command="{Binding  RelativeSource={RelativeSource AncestorType=xcdg:DataRow}, Path=DataContext.PreferLocationCommand}" 
+                                                        CommandParameter="{Binding}" 
+                                                        ToolTip="Prefer this image location">
+                                                        <Image Source="Images\favorite.png" Width="16" MinWidth="16" />
+                                                    </Button>
                                                     <Label Content="{Binding FullName, Mode=OneWay}" />
                                                 </DockPanel>
                                             </DataTemplate>

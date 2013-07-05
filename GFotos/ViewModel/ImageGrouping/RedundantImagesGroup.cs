@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -35,12 +36,41 @@ namespace GFotos.ViewModel.ImageGrouping
             Directories.AddRange(directories);
 
             Images = SafeObservableCollection<RedundantImage>.Create();
-            Images.AddRange(images);
+
+            var redundantImages = images as IList<RedundantImage> ?? images.ToList();
+            foreach (RedundantImage redundantImage in redundantImages)
+            {
+                redundantImage.FileInfos.CollectionChanged += HandleImagesChanged;
+                Images.Add(redundantImage);
+            }
 
             CleanDirectoryCommand = new RelayCommand(CleanDirectory, param => Directories.Count > 1);
             PreferDirectoryCommand = new RelayCommand(PreferDirectory, param => Directories.Count > 1);
         }
-        
+
+        private void HandleImagesChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action != NotifyCollectionChangedAction.Remove)
+            {
+                return;
+            }
+
+            foreach (var oldItem in e.OldItems)
+            {
+                var removedFile = oldItem as FileInfo;
+                HandleFileRemoval(removedFile);
+            }
+        }
+
+        private void HandleFileRemoval(FileInfo removedFile)
+        {
+            if (!Images.All(image => image.ContainedInDirectory(removedFile.Directory)))
+            {
+                Directories.Remove(directory => FileUtils.CompareDirectories(directory, removedFile.Directory) == 0);                
+                CommandManager.InvalidateRequerySuggested();                
+            }
+        }
+
         private void CleanDirectory(object obj)
         {
             var directoryInfo = obj as DirectoryInfo;
