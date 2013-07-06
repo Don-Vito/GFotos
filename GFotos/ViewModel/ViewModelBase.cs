@@ -2,7 +2,7 @@
 
 namespace GFotos.ViewModel
 {
-    class ViewModelBase : INotifyPropertyChanged
+    public class ViewModelBase : INotifyPropertyChanged
     {
         protected virtual void RaisePropertyChanged(string propertyName)
         {

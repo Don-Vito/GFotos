@@ -8,7 +8,7 @@ using GFotos.Framework;
 
 namespace GFotos.ViewModel.ImageGrouping
 {
-    internal class RedundantImage : ViewModelBase
+    public class RedundantImage : ViewModelBase
     {
         public SafeObservableCollection<FileInfo> FileInfos { get; private set; }
         public ICommand CleanLocationCommand { get; private set; }

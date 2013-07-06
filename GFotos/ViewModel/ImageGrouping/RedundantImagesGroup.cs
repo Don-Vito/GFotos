@@ -8,7 +8,7 @@ using GFotos.Framework;
 
 namespace GFotos.ViewModel.ImageGrouping
 {
-    class RedundantImagesGroup : ViewModelBase
+    public class RedundantImagesGroup : ViewModelBase
     {
         private readonly int _id;
         private static int _currentId;

@@ -8,7 +8,7 @@ using System.Windows.Threading;
 
 namespace GFotos.Framework
 {
-    class SafeObservableCollection<T> : ObservableCollection<T>
+    public class SafeObservableCollection<T> : ObservableCollection<T>
     {
         private readonly Dispatcher _currentDispatcher;
 

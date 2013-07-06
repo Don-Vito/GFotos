@@ -65,6 +65,9 @@
     <Compile Include="View\DirectoriesSelectionView.xaml.cs">
       <DependentUpon>DirectoriesSelectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\GroupDirectoresView.xaml.cs">
+      <DependentUpon>GroupDirectoresView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\RedundantImagesGroupView.xaml.cs">
       <DependentUpon>RedundantImagesGroupView.xaml</DependentUpon>
     </Compile>
@@ -80,6 +83,10 @@
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
     <Page Include="View\DirectoriesSelectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\GroupDirectoresView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
