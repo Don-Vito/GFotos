@@ -4,23 +4,24 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:view="clr-namespace:GFotos.View" xmlns:io="clr-namespace:System.IO;assembly=mscorlib"
+             xmlns:imageGrouping="clr-namespace:GFotos.ViewModel.ImageGrouping"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" 
-             d:DataContext="{d:DesignInstance view:GroupDirectoresView}">
+             d:DataContext="{d:DesignInstance imageGrouping:RedundantImagesGroup}">
     <StackPanel>
-        <Label Content="{Binding ImagesGroup.Title}" Background="#FF10164F" Foreground="#FFF1F1F1"/>
-        <ListView ItemsSource="{Binding ImagesGroup.Directories}" BorderThickness="0">
+        <Label Content="{Binding Title}" Background="#FF10164F" Foreground="#FFF1F1F1"/>
+        <ListView ItemsSource="{Binding Directories}" BorderThickness="0">
             <ListView.ItemTemplate>
                 <DataTemplate DataType="io:DirectoryInfo">
                     <DockPanel LastChildFill="True" >
                         <Button DockPanel.Dock="Left" Name="ButtonClean"
-                            Command="{Binding RelativeSource={RelativeSource AncestorType=view:GroupDirectoresView}, Path=ImagesGroup.CleanDirectoryCommand}" 
+                            Command="{Binding RelativeSource={RelativeSource AncestorType=view:GroupDirectoresView}, Path=DataContext.CleanDirectoryCommand}" 
                             CommandParameter="{Binding}" 
                             ToolTip="Cleanup all redundant images of this group from here">
                             <Image Source="Images\clean.png" Width="16" MinWidth="16" />
                         </Button>
                         <Button DockPanel.Dock="Left" Name="ButtonPrefer"
-                            Command="{Binding RelativeSource={RelativeSource AncestorType=view:GroupDirectoresView}, Path=ImagesGroup.PreferDirectoryCommand}" 
+                            Command="{Binding RelativeSource={RelativeSource AncestorType=view:GroupDirectoresView}, Path=DataContext.PreferDirectoryCommand}" 
                             CommandParameter="{Binding}" 
                             ToolTip="Leave all redundant images of this group here">
                             <Image Source="Images\favorite.png" Width="16" MinWidth="16" />

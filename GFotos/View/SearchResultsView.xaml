@@ -40,7 +40,7 @@
                         <DataTemplate>
                             <view:GroupDirectoresView                                                 
                                 GlobalPreferCommand="{Binding  RelativeSource={RelativeSource AncestorType=xcdg:DataGridControl}, Path=DataContext.GlobalPreferDirectoryCommand}" 
-                                ImagesGroup="{Binding RelativeSource={RelativeSource AncestorType=xcdg:DataRow}, Path=DataContext}"
+                                DataContext="{Binding RelativeSource={RelativeSource AncestorType=xcdg:DataRow}, Path=DataContext}"
                                 />
                         </DataTemplate>
                     </xcdg:Column.CellContentTemplate>
