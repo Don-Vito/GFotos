@@ -38,7 +38,8 @@ namespace GFotos.ViewModel
             Title = "GFotos";
             IsSearching = false;
 
-            DirectoriesSelection = new DirectoriesSelectionViewModel();
+            DirectoriesSelection = new DirectoriesSelectionViewModel {IsSelected = true};
+
             _groupingBackgroundWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
             _groupingBackgroundWorker.DoWork += RunGroupingHandler;
             _groupingBackgroundWorker.RunWorkerCompleted += GroupingCompletedHandler;

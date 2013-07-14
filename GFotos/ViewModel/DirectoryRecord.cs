@@ -2,14 +2,32 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.Windows.Input;
+using GFotos.Framework;
 
 namespace GFotos.ViewModel
 {
     class DirectoryRecord : ViewModelBase
     {
         public DirectoryInfo Info { get; private set; }
+        public ICommand AlternateCheckedCommand { get; private set; }
         private IEnumerable<FileInfo> _files;
         private IList<DirectoryRecord> _directoryRecords;
+
+        #region Selected
+        private bool _selected;
+        public bool Selected
+        {
+            get { return _selected; }
+            set
+            {
+                if (_selected == value) return;
+
+                _selected = value;
+                RaisePropertyChanged("Selected");
+            }
+        }
+        #endregion Selected
 
         #region Enabled
         private bool _enabled;
@@ -41,17 +59,17 @@ namespace GFotos.ViewModel
         }
         #endregion Chosen
 
-        #region Selected
-        private bool _selected;
-        public bool Selected
+        #region Checked
+        private bool _checked;
+        public bool Checked
         {
-            get { return _selected; }
+            get { return _checked; }
             set
             {
-                if (_selected == value) return;
+                if (_checked == value) return;
                 
-                _selected = value;
-                RaisePropertyChanged("Selected");
+                _checked = value;
+                RaisePropertyChanged("Checked");
                 UpdateChildren();
             }
         }
@@ -62,13 +80,13 @@ namespace GFotos.ViewModel
             
             foreach (DirectoryRecord directoryRecord in _directoryRecords)
             {
-                directoryRecord.Enabled = Enabled && !Selected;
-                directoryRecord.Selected = Selected;
+                directoryRecord.Enabled = Enabled && !Checked;
+                directoryRecord.Checked = Checked;
                 directoryRecord.Chosen = false;
             }
         }
 
-        #endregion Selected
+        #endregion Checked
 
         #region Files
         public IEnumerable<FileInfo> Files
@@ -112,8 +130,11 @@ namespace GFotos.ViewModel
         {
             Info = info;
             Enabled = enabled;
-            Selected = false;
+            Checked = false;
             Chosen = false;
+            Selected = false;
+
+            AlternateCheckedCommand = new RelayCommand(param => { Checked = !_checked; }, param => Enabled);
         }
     }
 }

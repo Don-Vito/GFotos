@@ -65,9 +65,11 @@
     <Compile Include="View\DirectoriesSelectionView.xaml.cs">
       <DependentUpon>DirectoriesSelectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\FocusExtension.cs" />
     <Compile Include="View\GroupDirectoresView.xaml.cs">
       <DependentUpon>GroupDirectoresView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\KeyBindingExtension.cs" />
     <Compile Include="View\RedundantImagesGroupView.xaml.cs">
       <DependentUpon>RedundantImagesGroupView.xaml</DependentUpon>
     </Compile>

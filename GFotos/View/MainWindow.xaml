@@ -28,8 +28,8 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <view:DirectoriesSelectionView Grid.Column="0" DataContext="{Binding DirectoriesSelection}" />
-            <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch"></GridSplitter>
+            <view:DirectoriesSelectionView Grid.Column="0" DataContext="{Binding DirectoriesSelection}" Margin="-1,0,1,0"/>
+            <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch" IsTabStop="False"/>
             <view:SearchResultsView Grid.Column="2" DataContext="{Binding SearchResults}"/>            
         </Grid>
     </Grid>

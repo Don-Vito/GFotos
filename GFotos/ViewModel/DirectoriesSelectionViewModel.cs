@@ -16,6 +16,20 @@ namespace GFotos.ViewModel
         public ICommand UnchooseDirectoryCommand { get; private set; }
         public ICommand ClearSelectionCommand { get; private set; }
 
+        private bool _isSelected;
+        public bool IsSelected
+        {
+            get { return _isSelected; }
+            set
+            {
+                if (_isSelected != value)
+                {
+                    _isSelected = value;
+                    RaisePropertyChanged("IsSelected");
+                }
+            }
+        }
+
         private bool _isEnabled;
         public bool IsEnabled
         {
@@ -37,7 +51,11 @@ namespace GFotos.ViewModel
 
             IsEnabled = true;
             RootDirectories = new SafeObservableCollection<DirectoryRecord>();
-            RootDirectories.AddRange(rootDirectories);            
+            RootDirectories.AddRange(rootDirectories);
+            if (RootDirectories.Any())
+            {
+                RootDirectories.First().Selected = true;
+            }
 
             ChooseDirectoryCommand = new RelayCommand(param => { ((DirectoryRecord)param).Chosen = true; });
             UnchooseDirectoryCommand = new RelayCommand(param => { ((DirectoryRecord)param).Chosen = false; });
@@ -74,7 +92,7 @@ namespace GFotos.ViewModel
         {
             foreach (DirectoryRecord chosenDirectory in ChosenDirectories.ToList())
             {
-                chosenDirectory.Selected = false;
+                chosenDirectory.Checked = false;
                 chosenDirectory.Chosen = false;
             }
         }

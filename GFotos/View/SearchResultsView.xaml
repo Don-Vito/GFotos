@@ -47,7 +47,7 @@
                 </xcdg:Column>
             </xcdg:DataGridControl.Columns>
         </xcdg:DataGridControl>
-        <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch"></GridSplitter>
+        <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch" IsTabStop="False"/>
         <view:RedundantImagesGroupView Grid.Column="2" DataContext="{Binding SelectedImagesGroup}"/>
     </Grid>
 </UserControl>

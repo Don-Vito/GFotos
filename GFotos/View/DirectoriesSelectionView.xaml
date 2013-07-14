@@ -4,7 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-             xmlns:viewmodel="clr-namespace:GFotos.ViewModel"
+             xmlns:viewmodel="clr-namespace:GFotos.ViewModel" 
+             xmlns:view="clr-namespace:GFotos.View"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" 
              d:DataContext="{d:DesignInstance viewmodel:DirectoriesSelectionViewModel}">
@@ -15,15 +16,18 @@
         </Grid.RowDefinitions>
         <DockPanel  Grid.Row="0">
             <Label Content="Select folders to cleanup" DockPanel.Dock="Left" />
-            <Button ToolTip="Clear selection" Command="{Binding ClearSelectionCommand}" DockPanel.Dock="Right" HorizontalAlignment="Right">
+            <Button ToolTip="Clear selection" Command="{Binding ClearSelectionCommand}" DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="0,1,0,-1">
                 <Image Source="Images\clear.png" Width="16" MinWidth="16" />
             </Button>
         </DockPanel>
-        <TreeView Grid.Row="1" ItemsSource="{Binding RootDirectories}" IsEnabled="{Binding IsEnabled}">
+        <TreeView ItemsSource="{Binding RootDirectories}" IsEnabled="{Binding IsEnabled}" 
+                  view:FocusExtension.IsFocused="{Binding IsSelected}"
+                  KeyboardNavigation.DirectionalNavigation="Contained" Grid.Row="1">
             <TreeView.Resources>
                 <HierarchicalDataTemplate DataType="{x:Type viewmodel:DirectoryRecord}" ItemsSource="{Binding Directories}" >
-                    <StackPanel Orientation="Horizontal">
-                        <CheckBox IsEnabled="{Binding Enabled}" IsChecked="{Binding Selected}">
+                    <StackPanel Orientation="Horizontal" 
+                                KeyboardNavigation.DirectionalNavigation="None">
+                        <CheckBox IsEnabled="{Binding Enabled}" IsChecked="{Binding Checked}">
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="Checked">
                                     <i:InvokeCommandAction 
@@ -41,6 +45,14 @@
                         <TextBlock Text="{Binding Info.Name}" />
                     </StackPanel>
                 </HierarchicalDataTemplate>
+                <!-- We have to define the key bindings collection as not shared, so each item gets its own copy of command -->
+                <InputBindingCollection x:Shared="False" x:Key="InputBindings">
+                    <KeyBinding Key="Space" Command="{Binding AlternateCheckedCommand}" CommandParameter="{Binding}"/>
+                </InputBindingCollection>
+                <Style TargetType="TreeViewItem">
+                    <Setter Property="IsSelected" Value="{Binding Path=Selected}"/>
+                    <Setter Property="view:KeyBindingExtension.InputBindings" Value="{StaticResource InputBindings}"/>
+                </Style>                                                                            
             </TreeView.Resources>
         </TreeView>
     </Grid>
