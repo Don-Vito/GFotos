@@ -38,14 +38,13 @@ namespace GFotos.ViewModel
             Title = "GFotos";
             IsSearching = false;
 
-            DirectoriesSelection = new DirectoriesSelectionViewModel {IsSelected = true};
+            CleanupCommand = new RelayCommand(param => Cleanup(), param => DirectoriesSelection.ChosenDirectories.Any() && !IsSearching);
+            CancelCleanupCommand = new RelayCommand(param => CancelCleanup(), param => CanCancelCleanup());
+            DirectoriesSelection = new DirectoriesSelectionViewModel(CleanupCommand) {IsSelected = true};
 
             _groupingBackgroundWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
             _groupingBackgroundWorker.DoWork += RunGroupingHandler;
             _groupingBackgroundWorker.RunWorkerCompleted += GroupingCompletedHandler;
-
-            CleanupCommand = new RelayCommand(param => Cleanup(), param => DirectoriesSelection.ChosenDirectories.Any() && !IsSearching);
-            CancelCleanupCommand = new RelayCommand(param => CancelCleanup(), param => CanCancelCleanup());
         }      
 
         private void Cleanup()

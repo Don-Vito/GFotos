@@ -15,6 +15,7 @@ namespace GFotos.ViewModel
         public ICommand ChooseDirectoryCommand { get; private set; }
         public ICommand UnchooseDirectoryCommand { get; private set; }
         public ICommand ClearSelectionCommand { get; private set; }
+        public ICommand CleanupCommand { get; private set; }
 
         private bool _isSelected;
         public bool IsSelected
@@ -44,8 +45,9 @@ namespace GFotos.ViewModel
             }
         }
 
-        public DirectoriesSelectionViewModel()
+        public DirectoriesSelectionViewModel(ICommand cleanupCommand)
         {
+            CleanupCommand = cleanupCommand;
             var rootDirectories = Directory.GetLogicalDrives().Select(
                 folder => CreateDirectoryRecord(new DirectoryInfo(folder)));
 

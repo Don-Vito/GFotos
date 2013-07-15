@@ -54,6 +54,9 @@
                     <Setter Property="view:KeyBindingExtension.InputBindings" Value="{StaticResource InputBindings}"/>
                 </Style>                                                                            
             </TreeView.Resources>
+            <TreeView.InputBindings>
+                <KeyBinding Key="Enter" Command="{Binding CleanupCommand}" CommandParameter="{Binding}"/>
+            </TreeView.InputBindings>
         </TreeView>
     </Grid>
 </UserControl>
