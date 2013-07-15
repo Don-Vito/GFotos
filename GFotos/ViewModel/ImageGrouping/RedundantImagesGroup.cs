@@ -35,6 +35,11 @@ namespace GFotos.ViewModel.ImageGrouping
             }
         }
 
+        public bool IsClean
+        {
+            get { return Images.All(image => image.IsClean); }
+        }
+
         public static RedundantImagesGroup Create(IEnumerable<DirectoryInfo> directories,
                                                   IEnumerable<RedundantImage> images)
         {
@@ -76,6 +81,11 @@ namespace GFotos.ViewModel.ImageGrouping
             RaisePropertyChanged("TotalSize");
             RaisePropertyChanged("TotalFiles");
             RaisePropertyChanged("Summary");
+
+            if (IsClean)
+            {
+                RaisePropertyChanged("IsClean");
+            }
         }
 
         private void HandleFileRemoval(FileInfo removedFile)

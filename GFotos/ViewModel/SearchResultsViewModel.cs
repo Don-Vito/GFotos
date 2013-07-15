@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Input;
@@ -29,7 +30,13 @@ namespace GFotos.ViewModel
         public SearchResultsViewModel(IEnumerable<RedundantImagesGroup> imagesGroups)
         {
             ImagesGroups = new SafeObservableCollection<RedundantImagesGroup>();
-            ImagesGroups.AddRange(imagesGroups);
+
+            var redundantImagesGroups = imagesGroups as IList<RedundantImagesGroup> ?? imagesGroups.ToList();
+            foreach (RedundantImagesGroup redundantImagesGroup in redundantImagesGroups)
+            {
+                redundantImagesGroup.PropertyChanged += HandleGroupChanged;
+                ImagesGroups.Add(redundantImagesGroup);
+            }
 
             if (ImagesGroups.Any())
             {
@@ -39,15 +46,30 @@ namespace GFotos.ViewModel
             GlobalPreferDirectoryCommand = new RelayCommand(GlobalPreferDirectory, param => ImagesGroups.Any());
         }
 
+        private void HandleGroupChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var redundantImagesGroup = sender as RedundantImagesGroup;
+            if (redundantImagesGroup == null)
+            {
+                return;
+            }
+
+            if (e.PropertyName == "IsClean")
+            {
+                ImagesGroups.Remove(redundantImagesGroup);
+            }
+        }
+
         private void GlobalPreferDirectory(object obj)
         {
             var directoryInfo = obj as DirectoryInfo;
 
-            foreach (RedundantImagesGroup redundantImagesGroup in ImagesGroups)
+            // We need to enumerate over a copy of the ImagesGroup,
+            // since some group might be cleaned by Global Prefer and as a result removed from the list
+            foreach (RedundantImagesGroup redundantImagesGroup in ImagesGroups.ToList())
             {
                 redundantImagesGroup.PreferDirectory(directoryInfo);
             }
         }
-
     }
 }
